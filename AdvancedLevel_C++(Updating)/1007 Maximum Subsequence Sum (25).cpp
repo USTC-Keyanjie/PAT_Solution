@@ -64,3 +64,58 @@ int main() {
     cout << maxsum << ' ' << v[left] << ' ' << v[right] << endl;
     return 0;
 }
+
+
+//接下来我们考虑另一种答案，这是我原先提交的答案，会有一个wrong answer出现
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    vector<int> v(n);
+    /*
+    @left: 目前最大和子序列的左端点
+    @right: 目前最大和子序列的右端点
+    @i: 搜索子序列的左端点
+    @p: 搜索指针/搜索子序列的右端点
+    @sum: 搜索子序列的和
+    @maxsum: 目前最大和子序列的和
+    */
+    int left = 0, right = n - 1, i = 0, sum = 0, maxsum = 0;
+    for (int p = 0; p < n; p++) {
+        cin >> v[p];
+        sum += v[p];
+        if (sum > maxsum) {
+            left = i;
+            right = p;
+            maxsum = sum;
+        } else if (sum < 0) {
+            i = p + 1;
+            sum = 0;
+        }
+    }
+
+//    maxsum = maxsum < 0 ? 0 : maxsum;
+    cout << maxsum << ' ' << v[left] << ' ' << v[right] << endl;
+    return 0;
+}
+
+/*
+其中不同的地方在于，maxsum初始化为0，正确答案初始化为-1，还有最后判断maxsum是否为-1的步骤去除了
+这样会有什么不一样的地方呢？
+现在给出一个测试用例：
+3
+0 0 -1
+正确答案的输出： 0 0 0
+错误答案的输出： 0 0 -1
+
+我们仔细看题目：
+If all the K numbers are negative, then its maximum sum is defined to be 0, and you are supposed to output the first and the last numbers of the whole sequence.
+如果所有的数都是负数，那么maximum就是0，要输出首位两个数
+0算负数吗？当然不是，那也就不符合所有的数都是负数的条件了，所以要输出的是总和为0，子序列首尾两个0。
+
+如果p指向0的话，那么sum(=0)>maxsum(=0)条件不满足，同样不满足sum(=0)<0的条件，不做任何处理了。
+所以错误答案里的写法与题目语义不一致了。题目只要求对于负数不做处理，而错误答案对0同样不做处理了。
+*/
