@@ -43,14 +43,13 @@ Total amount: $638.80
 说啊，有这么一个长途电话公司。他们的收费策略是不同的时间段不同的价钱，现在给你一批客户的通话记录，其中包含他们打电话的时间，挂电话的时间，但是其中有些无效信息，需要自己筛选。要你把他们这个月的电话账单打出来。
 
 分析：
-这其实是一到排序题，因为不管是题目要求的姓名按字典序排序，还是通话记录按时间排序，还是筛选无效信息，只要排个序都可以解决的。
+这其实是一道排序题，因为不管是题目要求的姓名按字典序排序，还是通话记录按时间排序，还是筛选无效信息，只要排个序都可以解决的。
 
 PS. (我很生气，相当生气！！！) 这题有个错误！
 题目交代了：It is guaranteed that at least one call is well paired in the input. 
 可是case2和case3里面有客户没有有效的通话记录，这样要求不输出这些客户的姓名，总花费，什么都不输出。
 因为这个问题我耽误了一个下午找bug！
-气）
-
+气）（╯‵□′）╯︵┴─┴
 */
 #include <iostream>
 #include <vector>
@@ -104,7 +103,6 @@ float billFromZero(record a) {
 float get_amount (record a, record b) {return billFromZero(b) - billFromZero(a);}
 
 int main () {
-    //freopen("input.txt", "r", stdin);
     
     // 记录个数
     int n;
@@ -125,6 +123,7 @@ int main () {
         r.time = r.day * 24 * 60 + r.hour * 60 + r.minute;
         cin >> r.status;
         
+        // 如果此用户已经被记录过了，那么就直接在他后面添加此通话记录
         int j;
         for (j = 0; j < customers.size(); j++) {
             if (customers[j].name.compare(r.name) == 0) {
@@ -133,6 +132,7 @@ int main () {
             }
         }
         
+        // 如果此用户还没有被记录过，那么添加此用户，并在他后面加通话记录
         if (j == customers.size()) {
             customer c;
             c.name = r.name;
@@ -141,16 +141,21 @@ int main () {
         }
     }
     
+    // 将客户按姓名字典序排序
     sort(customers.begin(), customers.end(), cmp_name);
     for (int i = 0; i < customers.size(); i++) {
+        // 将每个客户的通话记录按时间排序
         sort(customers[i].records.begin(), customers[i].records.end(), cmp_time);
-    }
+    } 
 
     // 这里的flag判别去掉就是题目本意应该的答案，可是为了通过case2和case3，我加上了flag判别，此代码可以全部AC
+    // 遍历每个客户
     for (int i = 0; i < customers.size(); i++) {
         int flag = 0;
         float total_amount = 0;
+        // 遍历他的通话记录
         for (int j = 0; j < customers[i].records.size() - 1; j++) {
+            // 如果这条通话记录状态是"on-line"，而下一条通话记录的状态是"off-line"，那么就认为这是一对有效的通话记录
             if (customers[i].records[j].status == "on-line" &&
                 customers[i].records[j + 1].status == "off-line") {
                 if (flag == 0) {
@@ -158,6 +163,7 @@ int main () {
                     printf(" %02d\n", customers[i].records[0].month);
                     flag = 1;
                 }
+                // 算出他的此次通话的消费
                 float this_amount = get_amount(customers[i].records[j], customers[i].records[j + 1]);
                 printf("%02d:%02d:%02d %02d:%02d:%02d %d $%.2f\n",
                        customers[i].records[j].day,
@@ -168,6 +174,7 @@ int main () {
                        customers[i].records[j + 1].minute,
                        customers[i].records[j + 1].time - customers[i].records[j].time,
                        this_amount);
+                // 加入到总费用中
                 total_amount += this_amount;
             }
         }
@@ -176,3 +183,4 @@ int main () {
     }
     return 0;
 }
+
