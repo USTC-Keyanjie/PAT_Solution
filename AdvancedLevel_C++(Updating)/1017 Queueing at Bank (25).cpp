@@ -61,7 +61,7 @@ bool cmp (customer a, customer b) {
 }
 
 int main () {
-    freopen("input.txt", "r", stdin);
+    //freopen("input.txt", "r", stdin);
     
     /*
      @n：客户人数
